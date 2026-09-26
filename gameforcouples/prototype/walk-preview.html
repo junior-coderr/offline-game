@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f4f4ef" />
+  <title>Explorer Walk · Roomscape</title>
+  <link rel="stylesheet" href="walk-preview.css" />
+  <script src="walk-preview.js" defer></script>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <a class="brand" href="animation.html">← <span>Motion lab</span></a>
+      <span class="offline-tag">Offline-ready · no engine required</span>
+    </header>
+    <section class="intro">
+      <p class="eyebrow">Character animation · exported crop sequence</p>
+      <h1>Explorer walk</h1>
+      <p>Playing the five selected poses in their saved order.</p>
+    </section>
+    <section class="preview-layout" aria-label="Explorer walking animation">
+      <div class="stage-wrap">
+        <div class="stage">
+          <canvas id="character" width="360" height="480" aria-label="Animated explorer walking in place"></canvas>
+        </div>
+        <p class="frame-caption" id="frame-caption">Loading frames…</p>
+      </div>
+      <aside class="controls">
+        <p class="eyebrow">Playback</p>
+        <h2>Motion controls</h2>
+        <div class="transport">
+          <button class="icon-button" id="previous" type="button" aria-label="Previous frame">‹</button>
+          <button class="play-button" id="play" type="button">Ⅱ Pause</button>
+          <button class="icon-button" id="next" type="button" aria-label="Next frame">›</button>
+        </div>
+        <label class="speed-label" for="speed"><span>Speed</span><output id="speed-value">4 fps</output></label>
+        <input id="speed" type="range" min="1" max="12" value="4" />
+        <div class="frame-strip" id="frame-strip" aria-label="Saved frame order"></div>
+        <p class="asset-note"><strong>Saved sequence</strong><br />5 crops · 4 fps default · original box coordinates retained in the frame metadata.</p>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

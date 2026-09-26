@@ -1,0 +1,106 @@
+{
+  "format": "roomscape-animation",
+  "version": 1,
+  "image": "assets/explorer-walk-atlas.webp",
+  "sourceSheetSize": {
+    "width": 1215,
+    "height": 1295
+  },
+  "atlasSize": {
+    "width": 1271,
+    "height": 453
+  },
+  "fps": 4,
+  "loop": true,
+  "frameOrder": [
+    "Frame 01",
+    "Frame 03",
+    "Frame 03",
+    "Frame 04",
+    "Frame 05"
+  ],
+  "sourceFrames": [
+    {
+      "name": "Frame 01",
+      "x": 475,
+      "y": 0,
+      "width": 252,
+      "height": 453
+    },
+    {
+      "name": "Frame 03",
+      "x": 13,
+      "y": 451,
+      "width": 252,
+      "height": 453
+    },
+    {
+      "name": "Frame 03",
+      "x": 329,
+      "y": 451,
+      "width": 252,
+      "height": 453
+    },
+    {
+      "name": "Frame 04",
+      "x": 634,
+      "y": 449,
+      "width": 259,
+      "height": 453
+    },
+    {
+      "name": "Frame 05",
+      "x": 956,
+      "y": 453,
+      "width": 256,
+      "height": 450
+    }
+  ],
+  "frames": [
+    {
+      "name": "Frame 01",
+      "x": 0,
+      "y": 0,
+      "width": 252,
+      "height": 453,
+      "sourceX": 475,
+      "sourceY": 0
+    },
+    {
+      "name": "Frame 03",
+      "x": 252,
+      "y": 0,
+      "width": 252,
+      "height": 453,
+      "sourceX": 13,
+      "sourceY": 451
+    },
+    {
+      "name": "Frame 03",
+      "x": 504,
+      "y": 0,
+      "width": 252,
+      "height": 453,
+      "sourceX": 329,
+      "sourceY": 451
+    },
+    {
+      "name": "Frame 04",
+      "x": 756,
+      "y": 0,
+      "width": 259,
+      "height": 453,
+      "sourceX": 634,
+      "sourceY": 449
+    },
+    {
+      "name": "Frame 05",
+      "x": 1015,
+      "y": 0,
+      "width": 256,
+      "height": 450,
+      "sourceX": 956,
+      "sourceY": 453
+    }
+  ]
+}
