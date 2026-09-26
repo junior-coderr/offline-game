@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f4ef" />
+    <title>Walk Cycle · Motion Check</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        --ink: #252b29;
+        --muted: #7a827c;
+        --line: #e5e7df;
+        --mint: #cbf0db;
+        --mint-strong: #5bb88c;
+        --paper: #fbfbf7;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(ellipse at 52% 29%, rgba(225, 241, 224, .65), transparent 42%),
+          #f5f4ef;
+        color: var(--ink);
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 48px));
+        margin: 0 auto;
+        padding: 34px 0 36px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 22px;
+      }
+
+      .eyebrow {
+        margin: 0 0 7px;
+        color: #738078;
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(24px, 3vw, 34px);
+        font-weight: 650;
+        letter-spacing: -.045em;
+      }
+
+      .subhead {
+        margin: 7px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .count-badge {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 13px;
+        border: 1px solid rgba(94, 130, 107, .16);
+        border-radius: 999px;
+        background: rgba(255,255,255,.7);
+        color: #50665a;
+        font-size: 12px;
+        font-weight: 650;
+        white-space: nowrap;
+      }
+
+      .count-badge::before {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #61b48b;
+        content: "";
+      }
+
+      .map-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: 0 12px;
+        border: 1px solid rgba(94, 130, 107, .16);
+        border-radius: 10px;
+        background: rgba(255,255,255,.7);
+        color: #50665a;
+        font-size: 11px;
+        font-weight: 650;
+        text-decoration: none;
+        transition: transform .15s ease, border-color .15s ease;
+      }
+
+      .map-link:hover { transform: translateY(-1px); border-color: #bfdcc9; }
+
+      .workbench {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 255px;
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .stage-wrap {
+        position: relative;
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid rgba(78, 94, 83, .13);
+        border-radius: 24px;
+        background: #e8ece5;
+        box-shadow: 0 18px 55px rgba(45, 56, 46, .09), 0 2px 7px rgba(45,56,46,.04);
+      }
+
+      #game {
+        width: 100%;
+        height: 100%;
+        min-height: 500px;
+      }
+
+      #game canvas {
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain;
+      }
+
+      .stage-caption {
+        position: absolute;
+        top: 18px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6c776e;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .11em;
+        pointer-events: none;
+        text-transform: uppercase;
+      }
+
+      .stage-caption span {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #76b994;
+      }
+
+      .panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 22px 19px 18px;
+        border: 1px solid rgba(78, 94, 83, .12);
+        border-radius: 24px;
+        background: rgba(255,255,255,.78);
+        box-shadow: 0 18px 55px rgba(45, 56, 46, .055);
+      }
+
+      .panel-kicker {
+        margin: 0 0 8px;
+        color: #828b83;
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+      }
+
+      .panel h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 650;
+        letter-spacing: -.025em;
+      }
+
+      .panel-copy {
+        margin: 7px 0 20px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .frame-readout {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin: 0 0 10px;
+        color: #59665d;
+        font-size: 12px;
+      }
+
+      .frame-readout strong {
+        color: var(--ink);
+        font-size: 16px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .frames {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+        margin-bottom: 22px;
+      }
+
+      .frame {
+        position: relative;
+        aspect-ratio: 354 / 295;
+        overflow: hidden;
+        border: 1px solid #e7e9e2;
+        border-radius: 10px;
+        background-color: #edf0e9;
+        background-image: url("assets/explorer-walk-15.png");
+        background-repeat: no-repeat;
+        background-size: 500% 300%;
+        opacity: .66;
+        transition: opacity .16s ease, border-color .16s ease, transform .16s ease;
+      }
+
+      .frame.active {
+        z-index: 1;
+        border: 2px solid #55a77f;
+        opacity: 1;
+        transform: translateY(-2px);
+      }
+
+      .control-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 9px;
+        color: #59665d;
+        font-size: 12px;
+      }
+
+      .control-label output {
+        color: var(--ink);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 5px;
+        margin: 3px 0 18px;
+        appearance: none;
+        border-radius: 99px;
+        background: linear-gradient(90deg, #76c39a, #c6e9d3);
+        cursor: pointer;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+        appearance: none;
+        border: 3px solid white;
+        border-radius: 50%;
+        background: #4b9e74;
+        box-shadow: 0 1px 5px rgba(22, 63, 39, .3);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        border: 3px solid white;
+        border-radius: 50%;
+        background: #4b9e74;
+        box-shadow: 0 1px 5px rgba(22, 63, 39, .3);
+      }
+
+      .transport {
+        display: grid;
+        grid-template-columns: 44px 1fr 44px;
+        gap: 8px;
+        align-items: center;
+        margin-top: 2px;
+      }
+
+      button {
+        min-height: 42px;
+        border: 1px solid #e3e7df;
+        border-radius: 12px;
+        background: #fff;
+        color: #39443c;
+        cursor: pointer;
+        font: inherit;
+        transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      }
+
+      button:hover { transform: translateY(-1px); border-color: #bfdcc9; }
+      button:active { transform: translateY(0); }
+
+      .play-button {
+        border-color: #58a77d;
+        background: #58a77d;
+        color: white;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .play-button:hover { border-color: #438e67; background: #438e67; }
+      .step-button { font-size: 17px; }
+
+      .hint {
+        margin: 15px 0 0;
+        color: #8a928b;
+        font-size: 10px;
+        line-height: 1.55;
+        text-align: center;
+      }
+
+      .footer-note {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 14px 5px 0;
+        color: #879087;
+        font-size: 11px;
+      }
+
+      .footer-note strong { color: #66736a; font-weight: 650; }
+
+      .error {
+        position: absolute;
+        inset: auto 18px 18px;
+        padding: 12px 14px;
+        border: 1px solid #edc8aa;
+        border-radius: 12px;
+        background: #fff8ef;
+        color: #784c2d;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 820px) {
+        .shell { width: min(700px, calc(100% - 28px)); padding-top: 22px; }
+        .workbench { grid-template-columns: 1fr; }
+        #game { min-height: 390px; }
+        .panel { gap: 18px; }
+        .panel-top { display: grid; grid-template-columns: 1fr 190px; gap: 0 18px; align-items: end; }
+        .panel-copy { margin-bottom: 0; }
+        .frame-readout { grid-column: 2; grid-row: 1; }
+        .frames { grid-column: 2; grid-row: 2; margin: 0; }
+        .speed-group { max-width: 320px; }
+        .transport { max-width: 320px; }
+        .hint { max-width: 320px; }
+      }
+
+      @media (max-width: 520px) {
+        .shell { width: calc(100% - 20px); padding-top: 16px; }
+        header { margin: 0 4px 15px; }
+        .subhead { max-width: 240px; font-size: 12px; }
+        .count-badge { padding: 8px 10px; font-size: 10px; }
+        .stage-wrap, .panel { border-radius: 18px; }
+        #game { min-height: 330px; }
+        .panel { padding: 17px 15px; }
+        .panel-top { grid-template-columns: 1fr; gap: 14px; }
+        .frame-readout, .frames { grid-column: auto; grid-row: auto; }
+        .footer-note { font-size: 10px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <div>
+          <p class="eyebrow">Gameforcouples · animation study</p>
+          <h1>Walk cycle</h1>
+          <p class="subhead">A quick look at your explorer moving through fifteen poses.</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:9px"><a class="map-link" href="index.html">← Game map</a><div class="count-badge">15-frame loop</div></div>
+      </header>
+
+      <section class="workbench" aria-label="Animation preview controls">
+        <div class="stage-wrap">
+          <div class="stage-caption"><span></span> Transparent sprite preview</div>
+          <div id="game"></div>
+          <div id="error" class="error" hidden></div>
+        </div>
+
+        <aside class="panel">
+          <div class="panel-top">
+            <div>
+              <p class="panel-kicker">Character · Explorer</p>
+              <h2>Motion controls</h2>
+              <p class="panel-copy">Change the playback speed and step through each pose.</p>
+            </div>
+            <div>
+              <div class="frame-readout"><span>Current frame</span><strong id="frame-readout">01 <span style="color:#98a198;font-size:12px">/ 15</span></strong></div>
+              <div class="frames" id="frames" aria-label="Fifteen animation frames"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="speed-group">
+              <label class="control-label" for="speed"><span>Playback speed</span><output id="speed-value" for="speed">8 fps</output></label>
+              <input id="speed" type="range" min="4" max="16" step="1" value="8" />
+            </div>
+            <div class="transport">
+              <button id="previous" class="step-button" type="button" aria-label="Previous frame">‹</button>
+              <button id="toggle" class="play-button" type="button">Pause</button>
+              <button id="next" class="step-button" type="button" aria-label="Next frame">›</button>
+            </div>
+            <p class="hint">Tip: pause, then use the arrows to inspect how clearly each pose changes.</p>
+          </div>
+        </aside>
+      </section>
+
+      <div class="footer-note">
+        <span><strong>Sprite sheet</strong> · 5 × 3 grid · 354 × 295 px frames</span>
+        <span>Press Space to play or pause</span>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/phaser@4.2.1/dist/phaser.min.js"></script>
+    <script>
+      const FRAME_RATE = 8;
+      const FRAME_COUNT = 15;
+      const frameElements = [];
+      const frameReadout = document.getElementById('frame-readout');
+      const toggleButton = document.getElementById('toggle');
+      const errorBox = document.getElementById('error');
+
+      for (let frame = 0; frame < FRAME_COUNT; frame += 1) {
+        const tile = document.createElement('div');
+        const column = frame % 5;
+        const row = Math.floor(frame / 5);
+        tile.className = 'frame';
+        tile.setAttribute('aria-label', `Frame ${frame + 1}`);
+        tile.style.backgroundPosition = `${column * 25}% ${row * 50}%`;
+        document.getElementById('frames').append(tile);
+        frameElements.push(tile);
+      }
+
+      function setCurrentFrame(frameIndex) {
+        const current = ((frameIndex % FRAME_COUNT) + FRAME_COUNT) % FRAME_COUNT;
+        frameReadout.innerHTML = `${String(current + 1).padStart(2, '0')} <span style="color:#98a198;font-size:12px">/ 15</span>`;
+        frameElements.forEach((tile, index) => tile.classList.toggle('active', index === current));
+      }
+
+      if (!window.Phaser) {
+        errorBox.hidden = false;
+        errorBox.textContent = 'Phaser could not load. Check your internet connection, then reload the preview.';
+      } else {
+        class PreviewScene extends Phaser.Scene {
+          constructor() { super('PreviewScene'); }
+
+          preload() {
+            this.load.spritesheet('explorer', 'assets/explorer-walk-15.png', {
+              frameWidth: 354,
+              frameHeight: 295
+            });
+            this.load.on('loaderror', (file) => {
+              errorBox.hidden = false;
+              errorBox.textContent = `Could not load ${file.key}. Make sure you opened this preview through a local web server.`;
+            });
+          }
+
+          create() {
+            const { width, height } = this.scale;
+            const backdrop = this.add.graphics();
+            const tile = 48;
+            for (let y = 0; y < height; y += tile) {
+              for (let x = 0; x < width; x += tile) {
+                const alternate = (Math.floor(x / tile) + Math.floor(y / tile)) % 2;
+                backdrop.fillStyle(alternate ? 0xe9ede7 : 0xf0f1eb, 1);
+                backdrop.fillRect(x, y, tile, tile);
+              }
+            }
+
+            const ambient = this.add.graphics();
+            ambient.fillStyle(0xd4e7d7, 0.48);
+            ambient.fillEllipse(width / 2, height / 2 + 82, 385, 230);
+            ambient.lineStyle(1, 0x9eac9f, 0.2);
+            ambient.strokeEllipse(width / 2, height / 2 + 82, 385, 230);
+            ambient.fillStyle(0x596a5c, 0.17);
+            ambient.fillEllipse(width / 2 + 3, height / 2 + 148, 126, 32);
+
+            this.character = this.add.sprite(width / 2, height / 2 + 32, 'explorer', 0);
+            this.character.setScale(0.98);
+            this.previewFps = FRAME_RATE;
+            this.frameIndex = 0;
+            this.frameElapsed = 0;
+            this.playing = true;
+            setCurrentFrame(0);
+
+            this.game.events.on('preview-pause', (paused) => {
+              this.playing = !paused;
+            });
+            this.game.events.on('preview-speed', (fps) => {
+              this.previewFps = fps;
+            });
+            this.game.events.on('preview-step', (delta) => {
+              this.playing = false;
+              this.frameIndex = (this.frameIndex + delta + FRAME_COUNT) % FRAME_COUNT;
+              this.character.setFrame(this.frameIndex);
+              setCurrentFrame(this.frameIndex);
+              setPaused(true);
+            });
+          }
+
+          update(_time, delta) {
+            if (!this.playing) return;
+            this.frameElapsed += delta;
+            const frameDuration = 1000 / this.previewFps;
+            if (this.frameElapsed >= frameDuration) {
+              const framesToAdvance = Math.floor(this.frameElapsed / frameDuration);
+              this.frameElapsed %= frameDuration;
+              this.frameIndex = (this.frameIndex + framesToAdvance) % FRAME_COUNT;
+              this.character.setFrame(this.frameIndex);
+              setCurrentFrame(this.frameIndex);
+            }
+          }
+        }
+
+        const game = new Phaser.Game({
+          type: Phaser.AUTO,
+          parent: 'game',
+          width: 800,
+          height: 560,
+          backgroundColor: '#e9ede7',
+          scene: [PreviewScene],
+          scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH
+          },
+          render: { antialias: true, roundPixels: false }
+        });
+
+        let paused = false;
+        const setPaused = (nextPaused) => {
+          paused = nextPaused;
+          toggleButton.textContent = paused ? 'Play' : 'Pause';
+          game.events.emit('preview-pause', paused);
+        };
+
+        toggleButton.addEventListener('click', () => setPaused(!paused));
+        document.getElementById('previous').addEventListener('click', () => game.events.emit('preview-step', -1));
+        document.getElementById('next').addEventListener('click', () => game.events.emit('preview-step', 1));
+
+        const speed = document.getElementById('speed');
+        const speedValue = document.getElementById('speed-value');
+        speed.addEventListener('input', () => {
+          speedValue.value = `${speed.value} fps`;
+          speedValue.textContent = `${speed.value} fps`;
+          game.events.emit('preview-speed', Number(speed.value));
+        });
+
+        window.addEventListener('keydown', (event) => {
+          if (event.code === 'Space' && !['INPUT', 'BUTTON'].includes(document.activeElement.tagName)) {
+            event.preventDefault();
+            setPaused(!paused);
+          }
+          if (event.code === 'ArrowLeft') game.events.emit('preview-step', -1);
+          if (event.code === 'ArrowRight') game.events.emit('preview-step', 1);
+        });
+      }
+    </script>
+  </body>
+</html>

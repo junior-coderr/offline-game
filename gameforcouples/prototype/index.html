@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#343640" />
+  <title>Room 01 · Game Map</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body { min-height: 100svh; background: #343640; }
+    main { width: 100vw; height: 100svh; height: 100dvh; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at center, #4c4d57 0, #343640 72%); }
+    svg { display: block; width: 100%; height: 100%; }
+    @media (max-aspect-ratio: 4/5) {
+      main { background: radial-gradient(ellipse at center, #4b4c56 0, #343640 76%); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      #room { animation: reveal .45s ease-out both; transform-origin: center; }
+      @keyframes reveal { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
+    }
+  </style>
+</head>
+<body>
+  <main aria-label="Room map">
+    <svg viewBox="226 22 448 812" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Portrait-format room map with cool-toned floor panels, one teal sofa, boundary walls, and one doorway">
+      <defs>
+        <pattern id="floor-panels" width="104" height="128" patternUnits="userSpaceOnUse">
+          <rect width="104" height="128" fill="#777985" />
+          <rect x="2" y="2" width="100" height="124" fill="#7e808c" />
+          <path d="M0 0H104V128H0Z" fill="none" stroke="#676a76" stroke-width="2" />
+          <path d="M8 8H96V120H8Z" fill="none" stroke="#888a95" stroke-width="1" opacity=".5" />
+        </pattern>
+        <pattern id="micro-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+          <path d="M32 0H0V32" fill="none" stroke="#555862" stroke-width="1" />
+        </pattern>
+      </defs>
+      <g id="room">
+        <rect x="242" y="42" width="416" height="768" fill="url(#floor-panels)" />
+        <image href="assets/sofa-teal.webp" x="276" y="106" width="348" height="182" preserveAspectRatio="xMidYMid meet" />
+        <path d="M242 42H658V810H482 M418 810H242V42" fill="none" stroke="#252830" stroke-width="19" stroke-linecap="square" stroke-linejoin="miter" />
+        <path d="M250 50H650V802H482 M418 802H250V50" fill="none" stroke="#a5a4ad" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter" opacity=".8" />
+        <path d="M418 810V794 M482 810V794" fill="none" stroke="#252830" stroke-width="5" stroke-linecap="square" />
+        <path d="M418 810V746" fill="none" stroke="#a99a82" stroke-width="3" />
+        <path d="M482 810A64 64 0 0 0 418 746" fill="none" stroke="#b2a58f" stroke-width="1.5" stroke-dasharray="4 5" opacity=".78" />
+      </g>
+    </svg>
+  </main>
+  <script>
+    const map = document.querySelector('svg');
+    const portrait = window.matchMedia('(max-aspect-ratio: 3/4)');
+    function fitMap() {
+      if (portrait.matches) {
+        map.setAttribute('viewBox', '230 28 440 796');
+        map.setAttribute('preserveAspectRatio', 'none');
+      } else {
+        map.setAttribute('viewBox', '226 22 448 812');
+        map.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      }
+    }
+    fitMap();
+    portrait.addEventListener('change', fitMap);
+  </script>
+</body>
+</html>
