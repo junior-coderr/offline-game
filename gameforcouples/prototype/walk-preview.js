@@ -1,7 +1,7 @@
 (() => {
   const animation = {
     imagePath: "assets/explorer-walk-atlas.webp",
-    fps: 4,
+    fps: 6,
     frames: [
       { name: "Frame 01", x: 0, y: 0, width: 252, height: 453 },
       { name: "Frame 03", x: 252, y: 0, width: 252, height: 453 },

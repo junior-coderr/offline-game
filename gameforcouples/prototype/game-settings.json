@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "player": {
+    "spawn": {
+      "x": 840,
+      "y": 1320
+    },
+    "sprite": {
+      "src": "assets/explorer-walk-atlas.webp",
+      "frames": [
+        {
+          "name": "Idle",
+          "x": 0,
+          "y": 0,
+          "width": 252,
+          "height": 453
+        },
+        {
+          "name": "Walk 1",
+          "x": 252,
+          "y": 0,
+          "width": 252,
+          "height": 453
+        },
+        {
+          "name": "Walk 2",
+          "x": 504,
+          "y": 0,
+          "width": 252,
+          "height": 453
+        },
+        {
+          "name": "Walk 3",
+          "x": 756,
+          "y": 0,
+          "width": 259,
+          "height": 453
+        },
+        {
+          "name": "Walk 4",
+          "x": 1015,
+          "y": 0,
+          "width": 256,
+          "height": 450
+        }
+      ],
+      "idleFrame": 0,
+      "walkFrames": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "walkFps": 8,
+      "displayHeight": 55,
+      "walkingEnabled": true
+    },
+    "movement": {
+      "acceleration": 600,
+      "maximumSpeed": 150,
+      "drag": 8.5
+    },
+    "collision": {
+      "radius": 10,
+      "footOffset": 8
+    }
+  },
+  "camera": {
+    "zoom": 2.2,
+    "ease": 5,
+    "idleZoom": 1.25,
+    "overviewZoom": 0.9
+  }
+}

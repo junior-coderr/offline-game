@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f4f4ef" />
+  <title>Map Designer · Roomscape</title>
+  <link rel="stylesheet" href="map-designer.css" />
+  <script src="map-designer.js?v=wall-joints-20260930" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html"><span class="brand-mark">R</span><span>ROOMSCAPE</span><span class="separator">/</span><span class="brand-page">Map designer</span></a>
+      <div class="top-actions">
+        <span class="save-state" id="save-state" role="status">Default room</span>
+        <button class="button quiet" id="open-project" type="button">Open project</button>
+        <button class="button quiet" id="export-project" type="button">Export</button>
+        <button class="button quiet" id="save-project" type="button">Save locally</button>
+        <button class="button primary" id="save-to-project" type="button">Save to project</button>
+      </div>
+      <input id="project-file" type="file" accept="application/json,.json" hidden />
+    </header>
+
+    <main class="editor">
+      <section class="page-title">
+        <div><p class="eyebrow">Room 01 · Design workspace</p><h1>Arrange the room</h1><p class="subcopy">Choose an asset, place it, then save the map used by the game.</p></div>
+      </section>
+
+      <section class="workspace" aria-label="Room map designer">
+        <aside class="library-panel" aria-label="Asset library">
+          <div class="panel-head"><div><p class="eyebrow">Your art</p><h2>Asset library <span id="asset-count">1</span></h2></div><label class="icon-button" for="asset-file" aria-label="Import images" title="Import images">＋</label></div>
+          <div class="asset-list" id="asset-list"></div>
+          <p class="library-note">Add art to <code>assets/furniture</code>, run the catalog script, then reload this page.</p>
+        </aside>
+
+        <section class="map-panel" aria-label="Room canvas">
+          <div class="canvas-toolbar">
+            <div class="canvas-title"><span class="live-dot"></span><strong>Room 01</strong><span>Multi-room orthogonal map</span></div>
+            <div class="canvas-tools"><label class="snap-toggle"><input id="snap-grid" type="checkbox" checked /><span>Snap</span></label><button id="zoom-out" class="icon-button" type="button" aria-label="Zoom out">−</button><output id="zoom-value">100%</output><button id="zoom-in" class="icon-button" type="button" aria-label="Zoom in">＋</button><button id="zoom-fit" class="tool-button" type="button">Fit</button></div>
+          </div>
+          <div class="stage-viewport" id="stage-viewport">
+            <svg id="designer-map" viewBox="226 22 448 812" role="application" aria-label="Drag furniture onto the room map">
+              <defs>
+                <pattern id="floor-panels" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#dce2e8"/><path d="M0 0H32V32H0Z" fill="none" stroke="#8191a3" stroke-width=".7" opacity=".43"/></pattern>
+                <pattern id="floor-grass" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#63aa5b"/><path d="M7 11l3-5m3 8 3-6m22 31 2-5m-8 4 2-5" stroke="#39894c" stroke-width="1.5" stroke-linecap="round" opacity=".55"/><circle cx="32" cy="12" r="1.2" fill="#8cc76b" opacity=".7"/></pattern>
+                <pattern id="floor-path" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#d9b987"/><path d="M0 0H48M0 24H48M0 48H48M0 0V48M24 0V48M48 0V48" stroke="#bb9a69" stroke-width="1" opacity=".4"/></pattern>
+                <pattern id="floor-paving" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#bfc9d5"/><path d="M0 0H40M0 20H40M0 40H40M0 0V40M20 0V40M40 0V40" stroke="#7f91a6" stroke-width="1" opacity=".45"/></pattern>
+                <pattern id="floor-parking" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#50505c"/><path d="M12 0V48M36 0V48" stroke="#f2e5d5" stroke-width="2" opacity=".6"/></pattern>
+                <pattern id="floor-brick" width="44" height="22" patternUnits="userSpaceOnUse"><rect width="44" height="22" fill="#a7444b"/><path d="M0 0H44M0 11H44M0 22H44M11 0V11M33 0V11M0 11V22M22 11V22M44 11V22" stroke="#692f3b" stroke-width="1.5" opacity=".8"/></pattern>
+                <pattern id="floor-dirt" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#98715e"/><path d="M4 8l3-2m11 17 3-2m4-13 2 1" stroke="#bd9277" stroke-width="1.4" opacity=".45"/></pattern>
+                <pattern id="floor-tile" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#dce2e8"/><path d="M0 0H32V32H0Z" fill="none" stroke="#8191a3" stroke-width=".7" opacity=".43"/></pattern>
+                <pattern id="floor-wood" width="28" height="48" patternUnits="userSpaceOnUse"><rect width="28" height="48" fill="#d7a15f"/><path d="M0 0V48M14 0V48M27 0V48M2 13H12M16 35H26" stroke="#a96e3e" stroke-width="1.1" opacity=".53"/></pattern>
+                <pattern id="floor-blue" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#78a9ba"/><path d="M0 0H32V32H0Z" fill="none" stroke="#557d90" stroke-width="1" opacity=".45"/></pattern>
+                <pattern id="designer-grid" width="16" height="16" patternUnits="userSpaceOnUse"><path d="M16 0H0V16" fill="none" stroke="#eff1e9" stroke-width=".8" opacity=".58"/></pattern>
+              </defs>
+              <g id="fixed-room"></g>
+              <g id="placed-assets"></g>
+              <g id="room-walls"></g>
+              <g id="selection-layer"></g>
+            </svg>
+          </div>
+          <div class="canvas-footer"><span id="canvas-hint">Select an asset or drag an item to arrange it.</span><span>Map coordinates are in design units</span></div>
+        </section>
+
+        <aside class="inspector-panel" aria-label="Selected item and layer controls">
+          <div class="panel-head inspector-head"><div><p class="eyebrow">Selected item</p><h2 id="selected-title">Nothing selected</h2></div></div>
+          <div class="empty-inspector" id="empty-inspector">Choose an item on the map to edit its size, position, and angle.</div>
+          <div class="inspector-fields" id="inspector-fields" hidden>
+            <label class="field">Name<input id="object-name" type="text" maxlength="48" /></label>
+            <div class="field-grid"><label class="field">X<input id="object-x" type="number" step="1" /></label><label class="field">Y<input id="object-y" type="number" step="1" /></label><label class="field">Width<input id="object-width" type="number" min="8" step="1" /></label><label class="field">Height<input id="object-height" type="number" min="8" step="1" /></label></div>
+            <label class="field rotation-field">Rotation <span><input id="object-rotation" type="range" min="-180" max="180" value="0" /><output id="rotation-value">0°</output></span></label>
+            <label class="check-row"><input id="lock-ratio" type="checkbox" checked /> Lock image proportions</label>
+            <p class="collider-help">Orange polygon is the character collision shape. Drag its points to tune the contour.</p>
+            <div class="object-actions"><button id="layer-back" class="tool-button" type="button">Send back</button><button id="layer-front" class="tool-button" type="button">Bring forward</button><button id="delete-object" class="tool-button danger" type="button">Delete</button></div>
+            <p class="object-dimensions" id="object-dimensions"></p>
+          </div>
+          <div class="layers"><div class="layer-heading"><p class="eyebrow">Room objects</p><span id="object-count">1</span></div><div class="layer-list" id="layer-list"></div></div>
+          <section class="wall-editor" aria-labelledby="wall-editor-title">
+            <div class="wall-editor-head"><div><p class="eyebrow">Structure</p><h2 id="wall-editor-title">Wall design</h2></div><span id="wall-count" class="wall-count">0</span></div>
+            <p class="wall-editor-copy">Add one wall block, then drag it or its end handles. Wall edits also update collision data.</p>
+            <div class="wall-tools"><button id="wall-select-tool" class="tool-button active" type="button" aria-pressed="true">Select wall</button><button id="wall-draw-tool" class="tool-button" type="button" aria-pressed="false">＋ Add wall</button></div>
+            <p id="wall-selection-status" class="wall-selection-status" role="status">Choose a wall or draw a new one.</p>
+            <div id="wall-fields" class="wall-fields" hidden>
+              <div class="field-grid"><label class="field">Start X<input id="wall-x1" type="number" step="1" /></label><label class="field">Start Y<input id="wall-y1" type="number" step="1" /></label><label class="field">End X<input id="wall-x2" type="number" step="1" /></label><label class="field">End Y<input id="wall-y2" type="number" step="1" /></label></div>
+              <label class="field">Thickness<input id="wall-width" type="number" min="4" max="120" step="1" /></label>
+              <p id="wall-dimensions" class="object-dimensions"></p>
+              <button id="delete-wall" class="tool-button danger wall-delete" type="button">Delete wall</button>
+            </div>
+          </section>
+        </aside>
+      </section>
+      <p class="save-note">Put images in <code>assets/furniture</code> and run <code>node scripts/build-asset-manifest.mjs</code>. <strong>Save to project</strong> writes the map layout and collision shapes to <code>maps/room-01/map.json</code>; the play page reads that file directly.</p>
+    </main>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+</body>
+</html>

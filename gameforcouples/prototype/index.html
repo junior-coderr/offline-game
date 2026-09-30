@@ -10,7 +10,7 @@
     html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
     body { min-height: 100svh; background: #343640; }
     main { width: 100vw; height: 100svh; height: 100dvh; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at center, #4c4d57 0, #343640 72%); }
-    svg { display: block; width: 100%; height: 100%; }
+    main > svg { display: block; width: 100%; height: 100%; }
     @media (max-aspect-ratio: 4/5) {
       main { background: radial-gradient(ellipse at center, #4b4c56 0, #343640 76%); }
     }
@@ -18,47 +18,74 @@
       #room { animation: reveal .45s ease-out both; transform-origin: center; }
       @keyframes reveal { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
     }
+    .touch-controls { position: fixed; z-index: 5; left: max(18px, env(safe-area-inset-left)); bottom: max(18px, env(safe-area-inset-bottom)); display: none; width: 124px; height: 124px; padding: 0; border: 0; background: transparent; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .stick-base { position: absolute; inset: 0; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.27); border-radius: 50%; background: rgba(24,26,32,.27); box-shadow: inset 0 1px 8px rgba(0,0,0,.1); backdrop-filter: blur(3px); }
+    .stick-knob { width: 48px; height: 48px; border: 1px solid rgba(255,255,255,.6); border-radius: 50%; background: rgba(240,241,236,.8); box-shadow: 0 2px 10px rgba(0,0,0,.18); transform: translate(0,0); }
+    .touch-controls:focus-visible .stick-base { outline: 3px solid rgba(255,255,255,.72); outline-offset: 3px; }
+    @media (pointer: coarse), (max-width: 820px) { .touch-controls { display: block; } }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .designer-link { position: fixed; z-index: 6; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid rgba(255,255,255,.23); border-radius: 11px; background: rgba(29,31,38,.45); color: #f7f6f0; font: 600 17px/1 ui-sans-serif, sans-serif; text-decoration: none; backdrop-filter: blur(5px); }
+    .designer-link:focus-visible { outline: 2px solid white; outline-offset: 3px; }
   </style>
 </head>
 <body>
   <main aria-label="Room map">
-    <svg viewBox="226 22 448 812" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Portrait-format room map with cool-toned floor panels, one teal sofa, boundary walls, and one doorway">
+    <svg viewBox="226 22 448 812" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Portrait-format room map with a controllable explorer, floor panels, furniture, and boundary walls" aria-describedby="game-hint">
       <defs>
-        <pattern id="floor-panels" width="104" height="128" patternUnits="userSpaceOnUse">
-          <rect width="104" height="128" fill="#777985" />
-          <rect x="2" y="2" width="100" height="124" fill="#7e808c" />
-          <path d="M0 0H104V128H0Z" fill="none" stroke="#676a76" stroke-width="2" />
-          <path d="M8 8H96V120H8Z" fill="none" stroke="#888a95" stroke-width="1" opacity=".5" />
+        <pattern id="floor-hall" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#609fc9" />
+          <rect x="1" y="1" width="62" height="62" fill="#78C3FB" />
+          <path d="M0 0H64V64H0Z" fill="none" stroke="#3978a2" stroke-width=".55" opacity=".23" />
+          <path d="M5 5H59V59H5Z" fill="none" stroke="#d8efff" stroke-width=".4" opacity=".1" />
         </pattern>
+        <pattern id="floor-left" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#558fba" />
+          <rect x="1" y="1" width="62" height="62" fill="#70b6e8" />
+          <path d="M0 0H64V64H0Z" fill="none" stroke="#3978a2" stroke-width=".55" opacity=".22" />
+          <path d="M5 5H59V59H5Z" fill="none" stroke="#d8efff" stroke-width=".4" opacity=".1" />
+        </pattern>
+        <pattern id="floor-right" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#568fba" />
+          <rect x="1" y="1" width="62" height="62" fill="#74b9eb" />
+          <path d="M0 0H64V64H0Z" fill="none" stroke="#3978a2" stroke-width=".55" opacity=".22" />
+          <path d="M5 5H59V59H5Z" fill="none" stroke="#d8efff" stroke-width=".4" opacity=".1" />
+        </pattern>
+        <pattern id="floor-lower" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#4c82aa" />
+          <rect x="1" y="1" width="62" height="62" fill="#68aada" />
+          <path d="M0 0H64V64H0Z" fill="none" stroke="#35688e" stroke-width=".55" opacity=".23" />
+          <path d="M5 5H59V59H5Z" fill="none" stroke="#d8efff" stroke-width=".4" opacity=".09" />
+        </pattern>
+        <pattern id="floor-entry" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#d6a644" />
+          <rect x="1" y="1" width="62" height="62" fill="#FFD166" />
+          <path d="M0 0H64V64H0Z" fill="none" stroke="#a97927" stroke-width=".55" opacity=".22" />
+          <path d="M5 5H59V59H5Z" fill="none" stroke="#fff0bd" stroke-width=".4" opacity=".12" />
+        </pattern>
+        <pattern id="floor-grass" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#63aa5b"/><path d="M7 11l3-5m3 8 3-6m22 31 2-5m-8 4 2-5" stroke="#39894c" stroke-width="1.5" stroke-linecap="round" opacity=".55"/><circle cx="32" cy="12" r="1.2" fill="#8cc76b" opacity=".7"/></pattern>
+        <pattern id="floor-path" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#d9b987"/><path d="M0 0H48M0 24H48M0 48H48M0 0V48M24 0V48M48 0V48" stroke="#bb9a69" stroke-width="1" opacity=".4"/></pattern>
+        <pattern id="floor-paving" width="40" height="40" patternUnits="userSpaceOnUse"><rect width="40" height="40" fill="#bfc9d5"/><path d="M0 0H40M0 20H40M0 40H40M0 0V40M20 0V40M40 0V40" stroke="#7f91a6" stroke-width="1" opacity=".45"/></pattern>
+        <pattern id="floor-parking" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="#50505c"/><path d="M12 0V48M36 0V48" stroke="#f2e5d5" stroke-width="2" opacity=".6"/></pattern>
+        <pattern id="floor-brick" width="44" height="22" patternUnits="userSpaceOnUse"><rect width="44" height="22" fill="#a7444b"/><path d="M0 0H44M0 11H44M0 22H44M11 0V11M33 0V11M0 11V22M22 11V22M44 11V22" stroke="#692f3b" stroke-width="1.5" opacity=".8"/></pattern>
+        <pattern id="floor-dirt" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#98715e"/><path d="M4 8l3-2m11 17 3-2m4-13 2 1" stroke="#bd9277" stroke-width="1.4" opacity=".45"/></pattern>
+        <pattern id="floor-tile" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#dce2e8"/><path d="M0 0H32V32H0Z" fill="none" stroke="#8191a3" stroke-width=".7" opacity=".43"/></pattern>
+        <pattern id="floor-wood" width="28" height="48" patternUnits="userSpaceOnUse"><rect width="28" height="48" fill="#d7a15f"/><path d="M0 0V48M14 0V48M27 0V48M2 13H12M16 35H26" stroke="#a96e3e" stroke-width="1.1" opacity=".53"/></pattern>
+        <pattern id="floor-blue" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#78a9ba"/><path d="M0 0H32V32H0Z" fill="none" stroke="#557d90" stroke-width="1" opacity=".45"/></pattern>
         <pattern id="micro-grid" width="32" height="32" patternUnits="userSpaceOnUse">
           <path d="M32 0H0V32" fill="none" stroke="#555862" stroke-width="1" />
         </pattern>
       </defs>
       <g id="room">
-        <rect x="242" y="42" width="416" height="768" fill="url(#floor-panels)" />
-        <image href="assets/sofa-teal.webp" x="276" y="106" width="348" height="182" preserveAspectRatio="xMidYMid meet" />
-        <path d="M242 42H658V810H482 M418 810H242V42" fill="none" stroke="#252830" stroke-width="19" stroke-linecap="square" stroke-linejoin="miter" />
-        <path d="M250 50H650V802H482 M418 802H250V50" fill="none" stroke="#a5a4ad" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="miter" opacity=".8" />
-        <path d="M418 810V794 M482 810V794" fill="none" stroke="#252830" stroke-width="5" stroke-linecap="square" />
-        <path d="M418 810V746" fill="none" stroke="#a99a82" stroke-width="3" />
-        <path d="M482 810A64 64 0 0 0 418 746" fill="none" stroke="#b2a58f" stroke-width="1.5" stroke-dasharray="4 5" opacity=".78" />
+        <g id="world-camera"></g>
       </g>
     </svg>
   </main>
-  <script>
-    const map = document.querySelector('svg');
-    const portrait = window.matchMedia('(max-aspect-ratio: 3/4)');
-    function fitMap() {
-      if (portrait.matches) {
-        map.setAttribute('viewBox', '230 28 440 796');
-        map.setAttribute('preserveAspectRatio', 'none');
-      } else {
-        map.setAttribute('viewBox', '226 22 448 812');
-        map.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      }
-    }
-    fitMap();
-    portrait.addEventListener('change', fitMap);
-  </script>
+  <a class="designer-link" href="map-designer.html" aria-label="Open map designer" title="Design map">✎</a>
+  <button class="touch-controls" id="move-stick" type="button" aria-label="Move the explorer with the virtual joystick">
+    <span class="stick-base"><span class="stick-knob" id="stick-knob"></span></span>
+  </button>
+  <p class="sr-only" id="game-hint">Use the arrow keys or W A S D, click or tap a destination, or drag the virtual joystick to move. The explorer stops at walls and furniture.</p>
+  <p id="load-error" role="status" style="position:fixed;left:50%;top:50%;max-width:min(90vw,32rem);transform:translate(-50%,-50%);padding:1rem 1.2rem;border:1px solid #777;border-radius:12px;background:#292b33;color:#fff;font:14px/1.5 system-ui;text-align:center;display:none"></p>
+  <script src="game.js?v=wall-joints-20260930" defer></script>
 </body>
 </html>
